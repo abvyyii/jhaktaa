@@ -1,0 +1,5 @@
+D:/jhatkaaa/build/CMakeFiles/jhatkaa.dir
+D:/jhatkaaa/build/CMakeFiles/edit_cache.dir
+D:/jhatkaaa/build/CMakeFiles/rebuild_cache.dir
+D:/jhatkaaa/build/CMakeFiles/jhatkaa_autogen_timestamp_deps.dir
+D:/jhatkaaa/build/CMakeFiles/jhatkaa_autogen.dir
