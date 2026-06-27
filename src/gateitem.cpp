@@ -7,7 +7,7 @@
 
 GateItem::GateItem(ItemKind kind, GateType type, QGraphicsItem* parent)
     : QGraphicsObject(parent), m_kind(kind), m_type(type), m_value(false), m_inputA(false), m_inputB(false), m_output(false), m_connected(false),
-      m_rect(kind == ItemKind::Gate ? QRectF(0, 0, 140, 90) : QRectF(0, 0, 110, 70)), m_inputSourceA(nullptr), m_inputSourceB(nullptr) {
+      m_rect(kind == ItemKind::Gate ? QRectF(0, 0, 56, 36) : QRectF(0, 0, 44, 28)), m_inputSourceA(nullptr), m_inputSourceB(nullptr) {
     setFlags(ItemIsMovable | ItemIsSelectable);
     setAcceptHoverEvents(true);
     evaluate();
@@ -240,4 +240,9 @@ QVariant GateItem::itemChange(GraphicsItemChange change, const QVariant& value) 
         update();
     }
     return QGraphicsObject::itemChange(change, value);
+}
+
+void GateItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) {
+    Q_UNUSED(event);
+    // Ignore double-clicks on gate items so only the Toggle Input button changes output.
 }

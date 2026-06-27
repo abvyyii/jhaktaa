@@ -51,6 +51,7 @@ signals:
 protected:
     int type() const override { return Type; }
     QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 
 private:
     ItemKind m_kind;
