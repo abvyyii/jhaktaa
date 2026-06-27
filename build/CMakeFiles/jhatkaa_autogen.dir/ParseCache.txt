@@ -200,6 +200,7 @@ D:/jhatkaaa/src/mainwindow.h
  mdp:C:/msys64/ucrt64/include/pthread_unistd.h
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/QEvent
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/QPointF
+ mdp:C:/msys64/ucrt64/include/qt6/QtCore/QPointer
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/QRectF
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/QString
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/q17memory.h
@@ -282,6 +283,7 @@ D:/jhatkaaa/src/mainwindow.h
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/qoverload.h
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/qpair.h
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/qpoint.h
+ mdp:C:/msys64/ucrt64/include/qt6/QtCore/qpointer.h
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/qprocessordetection.h
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/qrect.h
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/qrefcount.h
@@ -645,6 +647,7 @@ D:/jhatkaaa/src/gateitem.h
  mdp:C:/msys64/ucrt64/include/pthread_time.h
  mdp:C:/msys64/ucrt64/include/pthread_unistd.h
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/QPointF
+ mdp:C:/msys64/ucrt64/include/qt6/QtCore/QPointer
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/QRectF
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/QString
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/q17memory.h
@@ -717,6 +720,7 @@ D:/jhatkaaa/src/gateitem.h
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/qoverload.h
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/qpair.h
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/qpoint.h
+ mdp:C:/msys64/ucrt64/include/qt6/QtCore/qpointer.h
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/qprocessordetection.h
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/qrect.h
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/qrefcount.h

@@ -6,7 +6,7 @@
 #include <QGraphicsSceneMouseEvent>
 
 GateItem::GateItem(ItemKind kind, GateType type, QGraphicsItem* parent)
-    : QGraphicsObject(parent), m_kind(kind), m_type(type), m_value(false), m_inputA(false), m_inputB(false), m_output(false),
+    : QGraphicsObject(parent), m_kind(kind), m_type(type), m_value(false), m_inputA(false), m_inputB(false), m_output(false), m_connected(false),
       m_rect(kind == ItemKind::Gate ? QRectF(0, 0, 140, 90) : QRectF(0, 0, 110, 70)), m_inputSourceA(nullptr), m_inputSourceB(nullptr) {
     setFlags(ItemIsMovable | ItemIsSelectable);
     setAcceptHoverEvents(true);
@@ -27,12 +27,13 @@ void GateItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
     Q_UNUSED(option);
     Q_UNUSED(widget);
 
-    if (!painter || !painter->isActive()) {
+    if (!painter || !painter->isActive() || !painter->device()) {
         return;
     }
 
     const QColor fill = isSelected() ? QColor(200, 230, 255) : QColor(245, 245, 245);
-    painter->setPen(QPen(Qt::black, 2));
+    const QColor border = m_connected ? QColor(34, 139, 34) : Qt::black;
+    painter->setPen(QPen(border, m_connected ? 3 : 2));
     painter->setBrush(fill);
 
     if (m_kind == ItemKind::InputSource) {
@@ -40,12 +41,18 @@ void GateItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
         painter->setPen(Qt::black);
         painter->drawText(QRectF(0, 0, m_rect.width(), 24), Qt::AlignCenter, "INPUT");
         painter->drawText(QRectF(0, 28, m_rect.width(), 24), Qt::AlignCenter, QString::number(m_value ? 1 : 0));
+        if (m_connected) {
+            painter->drawText(QRectF(0, 48, m_rect.width(), 16), Qt::AlignCenter, "CONNECTED");
+        }
         drawNode(painter, QPointF(m_rect.width(), m_rect.height() / 2));
     } else if (m_kind == ItemKind::OutputSink) {
         painter->drawRoundedRect(m_rect, 10, 10);
         painter->setPen(Qt::black);
         painter->drawText(QRectF(0, 0, m_rect.width(), 24), Qt::AlignCenter, "OUTPUT");
         painter->drawText(QRectF(0, 28, m_rect.width(), 24), Qt::AlignCenter, QString::number(m_output ? 1 : 0));
+        if (m_connected) {
+            painter->drawText(QRectF(0, 48, m_rect.width(), 16), Qt::AlignCenter, "CONNECTED");
+        }
         drawNode(painter, QPointF(0, m_rect.height() / 2));
     } else {
         const qreal w = m_rect.width();
@@ -148,18 +155,29 @@ void GateItem::toggleInputB() {
 
 void GateItem::setInputSourceA(GateItem* source) {
     m_inputSourceA = source;
-    evaluate();
 }
 
 void GateItem::setInputSourceB(GateItem* source) {
     m_inputSourceB = source;
-    evaluate();
 }
 
 void GateItem::clearInputSources() {
     m_inputSourceA = nullptr;
     m_inputSourceB = nullptr;
     evaluate();
+}
+
+void GateItem::setConnected(bool connected) {
+    if (m_connected != connected) {
+        m_connected = connected;
+        if (scene()) {
+            update();
+        }
+    }
+}
+
+bool GateItem::isConnected() const {
+    return m_connected;
 }
 
 QPointF GateItem::outputAnchor() const {
@@ -184,12 +202,18 @@ QPointF GateItem::inputAnchor(int slot) const {
 }
 
 void GateItem::evaluate() {
+    fprintf(stderr, "GateItem::evaluate this=%p kind=%d type=%d\n", this, static_cast<int>(m_kind), static_cast<int>(m_type));
+    fflush(stderr);
     bool newOutput = m_output;
     if (m_kind == ItemKind::InputSource) {
         newOutput = m_value;
     } else if (m_kind == ItemKind::OutputSink) {
+        fprintf(stderr, " GateItem::evaluate output sink source=%p\n", m_inputSourceA.data());
+        fflush(stderr);
         newOutput = m_inputSourceA ? m_inputSourceA->output() : false;
     } else {
+        fprintf(stderr, " GateItem::evaluate gate sourceA=%p sourceB=%p\n", m_inputSourceA.data(), m_inputSourceB.data());
+        fflush(stderr);
         const bool a = m_inputSourceA ? m_inputSourceA->output() : m_inputA;
         const bool b = m_inputSourceB ? m_inputSourceB->output() : m_inputB;
         if (m_type == GateType::NOT) {
@@ -201,7 +225,9 @@ void GateItem::evaluate() {
 
     if (m_output != newOutput) {
         m_output = newOutput;
-        update();
+        if (scene()) {
+            update();
+        }
     }
 }
 
@@ -214,68 +240,4 @@ QVariant GateItem::itemChange(GraphicsItemChange change, const QVariant& value) 
         update();
     }
     return QGraphicsObject::itemChange(change, value);
-}
-
-bool GateItem::nodeAt(const QPointF& localPos, int& slot, bool& output) const {
-    const qreal radius = 8.0;
-    if (m_kind == ItemKind::InputSource) {
-        const QPointF out = QPointF(m_rect.width(), m_rect.height() / 2);
-        if (QLineF(localPos, out).length() <= radius) {
-            slot = -1;
-            output = true;
-            return true;
-        }
-        return false;
-    }
-    if (m_kind == ItemKind::OutputSink) {
-        const QPointF in = QPointF(0, m_rect.height() / 2);
-        if (QLineF(localPos, in).length() <= radius) {
-            slot = 0;
-            output = false;
-            return true;
-        }
-        return false;
-    }
-    const QPointF out = QPointF(m_rect.width(), m_rect.height() / 2);
-    if (QLineF(localPos, out).length() <= radius) {
-        slot = -1;
-        output = true;
-        return true;
-    }
-    const QPointF in0 = QPointF(0, m_rect.height() * 0.33);
-    if (QLineF(localPos, in0).length() <= radius) {
-        slot = 0;
-        output = false;
-        return true;
-    }
-    if (m_type != GateType::NOT) {
-        const QPointF in1 = QPointF(0, m_rect.height() * 0.66);
-        if (QLineF(localPos, in1).length() <= radius) {
-            slot = 1;
-            output = false;
-            return true;
-        }
-    }
-    return false;
-}
-
-void GateItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
-    if (event->button() != Qt::LeftButton) {
-        QGraphicsObject::mousePressEvent(event);
-        return;
-    }
-    int slot = -1;
-    bool output = false;
-    if (nodeAt(event->pos(), slot, output)) {
-        qDebug() << "GateItem::mousePressEvent nodeAt" << this << "slot" << slot << "output" << output;
-        emit nodeClicked(slot, output);
-        event->accept();
-        return;
-    }
-    QGraphicsObject::mousePressEvent(event);
-}
-
-void GateItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) {
-    Q_UNUSED(event);
-    toggleValue();
 }

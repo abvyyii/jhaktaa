@@ -12,7 +12,7 @@
 
 # =============================================================================
 # Project: Jhatkaa
-# Configurations: 
+# Configurations: RelWithDebInfo
 # =============================================================================
 
 #############################################
@@ -20,6 +20,11 @@
 
 ninja_required_version = 1.5
 
+
+#############################################
+# Set configuration variable for custom commands.
+
+CONFIGURATION = RelWithDebInfo
 # =============================================================================
 # Include auxiliary files.
 
@@ -44,34 +49,38 @@ cmake_ninja_workdir = D$:/jhatkaaa/build/
 
 build cmake_object_order_depends_target_jhatkaa: phony || jhatkaa_autogen jhatkaa_autogen/mocs_compilation.cpp jhatkaa_autogen/timestamp jhatkaa_autogen_timestamp_deps
 
-build CMakeFiles/jhatkaa.dir/jhatkaa_autogen/mocs_compilation.cpp.obj: CXX_COMPILER__jhatkaa_unscanned_ D$:/jhatkaaa/build/jhatkaa_autogen/mocs_compilation.cpp || cmake_object_order_depends_target_jhatkaa
+build CMakeFiles/jhatkaa.dir/jhatkaa_autogen/mocs_compilation.cpp.obj: CXX_COMPILER__jhatkaa_unscanned_RelWithDebInfo D$:/jhatkaaa/build/jhatkaa_autogen/mocs_compilation.cpp || cmake_object_order_depends_target_jhatkaa
+  CONFIG = RelWithDebInfo
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -DWINVER=0x0A00 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN32_WINNT=0x0A00 -D_WIN64
   DEP_FILE = CMakeFiles\jhatkaa.dir\jhatkaa_autogen\mocs_compilation.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -O2 -g -DNDEBUG -std=gnu++17
   INCLUDES = -ID:/jhatkaaa/build/jhatkaa_autogen/include -isystem C:/msys64/ucrt64/include/qt6/QtWidgets -isystem C:/msys64/ucrt64/include/qt6 -isystem C:/msys64/ucrt64/include/qt6/QtCore -isystem C:/msys64/ucrt64/share/qt6/mkspecs/win32-g++ -isystem C:/msys64/ucrt64/include/qt6/QtGui
   OBJECT_DIR = CMakeFiles\jhatkaa.dir
   OBJECT_FILE_DIR = CMakeFiles\jhatkaa.dir\jhatkaa_autogen
 
-build CMakeFiles/jhatkaa.dir/src/main.cpp.obj: CXX_COMPILER__jhatkaa_unscanned_ D$:/jhatkaaa/src/main.cpp || cmake_object_order_depends_target_jhatkaa
+build CMakeFiles/jhatkaa.dir/src/main.cpp.obj: CXX_COMPILER__jhatkaa_unscanned_RelWithDebInfo D$:/jhatkaaa/src/main.cpp || cmake_object_order_depends_target_jhatkaa
+  CONFIG = RelWithDebInfo
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -DWINVER=0x0A00 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN32_WINNT=0x0A00 -D_WIN64
   DEP_FILE = CMakeFiles\jhatkaa.dir\src\main.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -O2 -g -DNDEBUG -std=gnu++17
   INCLUDES = -ID:/jhatkaaa/build/jhatkaa_autogen/include -isystem C:/msys64/ucrt64/include/qt6/QtWidgets -isystem C:/msys64/ucrt64/include/qt6 -isystem C:/msys64/ucrt64/include/qt6/QtCore -isystem C:/msys64/ucrt64/share/qt6/mkspecs/win32-g++ -isystem C:/msys64/ucrt64/include/qt6/QtGui
   OBJECT_DIR = CMakeFiles\jhatkaa.dir
   OBJECT_FILE_DIR = CMakeFiles\jhatkaa.dir\src
 
-build CMakeFiles/jhatkaa.dir/src/mainwindow.cpp.obj: CXX_COMPILER__jhatkaa_unscanned_ D$:/jhatkaaa/src/mainwindow.cpp || cmake_object_order_depends_target_jhatkaa
+build CMakeFiles/jhatkaa.dir/src/mainwindow.cpp.obj: CXX_COMPILER__jhatkaa_unscanned_RelWithDebInfo D$:/jhatkaaa/src/mainwindow.cpp || cmake_object_order_depends_target_jhatkaa
+  CONFIG = RelWithDebInfo
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -DWINVER=0x0A00 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN32_WINNT=0x0A00 -D_WIN64
   DEP_FILE = CMakeFiles\jhatkaa.dir\src\mainwindow.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -O2 -g -DNDEBUG -std=gnu++17
   INCLUDES = -ID:/jhatkaaa/build/jhatkaa_autogen/include -isystem C:/msys64/ucrt64/include/qt6/QtWidgets -isystem C:/msys64/ucrt64/include/qt6 -isystem C:/msys64/ucrt64/include/qt6/QtCore -isystem C:/msys64/ucrt64/share/qt6/mkspecs/win32-g++ -isystem C:/msys64/ucrt64/include/qt6/QtGui
   OBJECT_DIR = CMakeFiles\jhatkaa.dir
   OBJECT_FILE_DIR = CMakeFiles\jhatkaa.dir\src
 
-build CMakeFiles/jhatkaa.dir/src/gateitem.cpp.obj: CXX_COMPILER__jhatkaa_unscanned_ D$:/jhatkaaa/src/gateitem.cpp || cmake_object_order_depends_target_jhatkaa
+build CMakeFiles/jhatkaa.dir/src/gateitem.cpp.obj: CXX_COMPILER__jhatkaa_unscanned_RelWithDebInfo D$:/jhatkaaa/src/gateitem.cpp || cmake_object_order_depends_target_jhatkaa
+  CONFIG = RelWithDebInfo
   DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -DWINVER=0x0A00 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN32_WINNT=0x0A00 -D_WIN64
   DEP_FILE = CMakeFiles\jhatkaa.dir\src\gateitem.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -O2 -g -DNDEBUG -std=gnu++17
   INCLUDES = -ID:/jhatkaaa/build/jhatkaa_autogen/include -isystem C:/msys64/ucrt64/include/qt6/QtWidgets -isystem C:/msys64/ucrt64/include/qt6 -isystem C:/msys64/ucrt64/include/qt6/QtCore -isystem C:/msys64/ucrt64/share/qt6/mkspecs/win32-g++ -isystem C:/msys64/ucrt64/include/qt6/QtGui
   OBJECT_DIR = CMakeFiles\jhatkaa.dir
   OBJECT_FILE_DIR = CMakeFiles\jhatkaa.dir\src
@@ -84,7 +93,9 @@ build CMakeFiles/jhatkaa.dir/src/gateitem.cpp.obj: CXX_COMPILER__jhatkaa_unscann
 #############################################
 # Link the executable jhatkaa.exe
 
-build jhatkaa.exe: CXX_EXECUTABLE_LINKER__jhatkaa_ CMakeFiles/jhatkaa.dir/jhatkaa_autogen/mocs_compilation.cpp.obj CMakeFiles/jhatkaa.dir/src/main.cpp.obj CMakeFiles/jhatkaa.dir/src/mainwindow.cpp.obj CMakeFiles/jhatkaa.dir/src/gateitem.cpp.obj | C$:/msys64/ucrt64/lib/libQt6Widgets.dll.a C$:/msys64/ucrt64/lib/libQt6Gui.dll.a C$:/msys64/ucrt64/lib/libQt6Core.dll.a || jhatkaa_autogen jhatkaa_autogen_timestamp_deps
+build jhatkaa.exe: CXX_EXECUTABLE_LINKER__jhatkaa_RelWithDebInfo CMakeFiles/jhatkaa.dir/jhatkaa_autogen/mocs_compilation.cpp.obj CMakeFiles/jhatkaa.dir/src/main.cpp.obj CMakeFiles/jhatkaa.dir/src/mainwindow.cpp.obj CMakeFiles/jhatkaa.dir/src/gateitem.cpp.obj | C$:/msys64/ucrt64/lib/libQt6Widgets.dll.a C$:/msys64/ucrt64/lib/libQt6Gui.dll.a C$:/msys64/ucrt64/lib/libQt6Core.dll.a || jhatkaa_autogen jhatkaa_autogen_timestamp_deps
+  CONFIG = RelWithDebInfo
+  FLAGS = -O2 -g -DNDEBUG
   LINK_LIBRARIES = C:/msys64/ucrt64/lib/libQt6Widgets.dll.a  C:/msys64/ucrt64/lib/libQt6Gui.dll.a  C:/msys64/ucrt64/lib/libQt6Core.dll.a  -lmpr  -luserenv  -ld3d11  -ldxgi  -ldxguid  -ld3d12  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\jhatkaa.dir
   POST_BUILD = cd .
@@ -133,7 +144,7 @@ build jhatkaa_autogen: phony CMakeFiles/jhatkaa_autogen jhatkaa_autogen/timestam
 # Custom command for jhatkaa_autogen\timestamp
 
 build jhatkaa_autogen/timestamp jhatkaa_autogen/mocs_compilation.cpp | ${cmake_ninja_workdir}jhatkaa_autogen/timestamp ${cmake_ninja_workdir}jhatkaa_autogen/mocs_compilation.cpp: CUSTOM_COMMAND C$:/msys64/ucrt64/share/qt6/bin/moc.exe C$:/msys64/ucrt64/share/qt6/bin/uic.exe || jhatkaa_autogen_timestamp_deps
-  COMMAND = C:\Windows\system32\cmd.exe /C "cd /D D:\jhatkaaa\build && C:\msys64\ucrt64\bin\cmake.exe -E cmake_autogen D:/jhatkaaa/build/CMakeFiles/jhatkaa_autogen.dir/AutogenInfo.json "" && C:\msys64\ucrt64\bin\cmake.exe -E touch D:/jhatkaaa/build/jhatkaa_autogen/timestamp && C:\msys64\ucrt64\bin\cmake.exe -E cmake_transform_depfile Ninja gccdepfile D:/jhatkaaa D:/jhatkaaa D:/jhatkaaa/build D:/jhatkaaa/build D:/jhatkaaa/build/jhatkaa_autogen/deps D:/jhatkaaa/build/CMakeFiles/d/7c21f2d1025249084ea5694e7135dd3fce07a19ec57ee453357982a38fae967a.d"
+  COMMAND = C:\Windows\system32\cmd.exe /C "cd /D D:\jhatkaaa\build && C:\msys64\ucrt64\bin\cmake.exe -E cmake_autogen D:/jhatkaaa/build/CMakeFiles/jhatkaa_autogen.dir/AutogenInfo.json RelWithDebInfo && C:\msys64\ucrt64\bin\cmake.exe -E touch D:/jhatkaaa/build/jhatkaa_autogen/timestamp && C:\msys64\ucrt64\bin\cmake.exe -E cmake_transform_depfile Ninja gccdepfile D:/jhatkaaa D:/jhatkaaa D:/jhatkaaa/build D:/jhatkaaa/build D:/jhatkaaa/build/jhatkaa_autogen/deps D:/jhatkaaa/build/CMakeFiles/d/7c21f2d1025249084ea5694e7135dd3fce07a19ec57ee453357982a38fae967a.d"
   DESC = Automatic MOC and UIC for target jhatkaa
   depfile = CMakeFiles\d\7c21f2d1025249084ea5694e7135dd3fce07a19ec57ee453357982a38fae967a.d
   deps = gcc
@@ -181,6 +192,7 @@ build C$:/msys64/ucrt64/lib/cmake/Qt6CorePrivate/Qt6CorePrivateAdditionalTargetI
 # Clean additional files.
 
 build CMakeFiles/clean.additional: CLEAN_ADDITIONAL
+  CONFIG = RelWithDebInfo
 
 
 #############################################

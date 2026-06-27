@@ -11,6 +11,7 @@
 #include <QLabel>
 #include <QListWidget>
 #include <QPointF>
+#include <QPointer>
 #include <QPushButton>
 #include <QTableWidget>
 #include <QToolBar>
@@ -20,8 +21,8 @@
 #include "gateitem.h"
 
 struct Connection {
-    GateItem* source = nullptr;
-    GateItem* target = nullptr;
+    QPointer<GateItem> source;
+    QPointer<GateItem> target;
     int inputSlot = -1;
     QGraphicsLineItem* line = nullptr;
 };
@@ -36,8 +37,7 @@ private slots:
     void toggleInputA();
     void toggleInputB();
     void updateSelectedGate();
-    void startWireToInputA();
-    void startWireToInputB();
+    void connectSelectedItems();
     void deleteSelectedItem();
 
 private:
@@ -51,7 +51,6 @@ private:
     void clearConnections();
     void addSceneItem(const QString& type, const QPointF& scenePos);
     void removeItemWithConnections(GateItem* item);
-    void onNodeClicked(int slot, bool output);
 
 protected:
     bool eventFilter(QObject* obj, QEvent* event) override;
@@ -59,17 +58,15 @@ protected:
 private:
     QGraphicsScene* m_scene;
     QGraphicsView* m_view;
-    GateItem* m_selectedItem;
-    GateItem* m_pendingSourceItem;
+    QPointer<GateItem> m_selectedItem;
     QLabel* m_statusLabel;
     QPushButton* m_toggleAButton;
     QPushButton* m_toggleBButton;
-    QPushButton* m_connectAButton;
-    QPushButton* m_connectBButton;
+    QPushButton* m_connectButton;
     QPushButton* m_deleteButton;
     QListWidget* m_gatePalette;
     QTableWidget* m_truthTable;
     std::vector<Connection> m_connections;
-    int m_pendingInputSlot;
     bool m_refreshingCircuit;
+    bool m_updatingSelection;
 };

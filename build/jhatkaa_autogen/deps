@@ -195,6 +195,7 @@ jhatkaa_autogen/timestamp: \
 	C:/msys64/ucrt64/include/pthread_unistd.h \
 	C:/msys64/ucrt64/include/qt6/QtCore/QEvent \
 	C:/msys64/ucrt64/include/qt6/QtCore/QPointF \
+	C:/msys64/ucrt64/include/qt6/QtCore/QPointer \
 	C:/msys64/ucrt64/include/qt6/QtCore/QRectF \
 	C:/msys64/ucrt64/include/qt6/QtCore/QString \
 	C:/msys64/ucrt64/include/qt6/QtCore/q17memory.h \
@@ -277,6 +278,7 @@ jhatkaa_autogen/timestamp: \
 	C:/msys64/ucrt64/include/qt6/QtCore/qoverload.h \
 	C:/msys64/ucrt64/include/qt6/QtCore/qpair.h \
 	C:/msys64/ucrt64/include/qt6/QtCore/qpoint.h \
+	C:/msys64/ucrt64/include/qt6/QtCore/qpointer.h \
 	C:/msys64/ucrt64/include/qt6/QtCore/qprocessordetection.h \
 	C:/msys64/ucrt64/include/qt6/QtCore/qrect.h \
 	C:/msys64/ucrt64/include/qt6/QtCore/qrefcount.h \

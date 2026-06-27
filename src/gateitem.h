@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QGraphicsObject>
+#include <QPointer>
 #include <QPainter>
 #include <QPointF>
 #include <QRectF>
@@ -35,28 +36,31 @@ public:
     void setInputSourceA(GateItem* source);
     void setInputSourceB(GateItem* source);
     void clearInputSources();
+    void setConnected(bool connected);
+    bool isConnected() const;
+    enum { Type = QGraphicsItem::UserType + 1 };
+
     QPointF outputAnchor() const;
     QPointF inputAnchor(int slot) const;
     void evaluate();
     bool hasInputSource(int slot) const;
 
 signals:
-    void nodeClicked(int slot, bool output);
+    // Selection-based connection handling is managed by MainWindow.
 
 protected:
+    int type() const override { return Type; }
     QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
-    void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 
 private:
-    bool nodeAt(const QPointF& localPos, int& slot, bool& output) const;
     ItemKind m_kind;
     GateType m_type;
     bool m_value;
     bool m_inputA;
     bool m_inputB;
     bool m_output;
+    bool m_connected;
     QRectF m_rect;
-    GateItem* m_inputSourceA;
-    GateItem* m_inputSourceB;
+    QPointer<GateItem> m_inputSourceA;
+    QPointer<GateItem> m_inputSourceB;
 };

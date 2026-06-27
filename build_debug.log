@@ -1,0 +1,10 @@
+-- Configuring done (0.4s)
+-- Generating done (0.2s)
+-- Build files have been written to: D:/jhatkaaa/build
+ninja: Entering directory `build'
+[1/6] Automatic MOC and UIC for target jhatkaa
+[2/6] Building CXX object CMakeFiles/jhatkaa.dir/src/main.cpp.obj
+[3/6] Building CXX object CMakeFiles/jhatkaa.dir/src/gateitem.cpp.obj
+[4/6] Building CXX object CMakeFiles/jhatkaa.dir/jhatkaa_autogen/mocs_compilation.cpp.obj
+[5/6] Building CXX object CMakeFiles/jhatkaa.dir/src/mainwindow.cpp.obj
+[6/6] Linking CXX executable jhatkaa.exe
