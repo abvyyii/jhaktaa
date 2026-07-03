@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QGraphicsEllipseItem>
 #include <QGraphicsObject>
 #include <QPointer>
 #include <QPainter>
@@ -16,6 +17,27 @@ enum class ItemKind {
 };
 
 class GateItem;
+
+class AnchorItem : public QGraphicsEllipseItem {
+public:
+    enum class AnchorRole {
+        InputA,
+        InputB,
+        Output
+    };
+
+    explicit AnchorItem(GateItem* parent, AnchorRole role);
+
+    GateItem* gate() const;
+    AnchorRole role() const;
+    int inputSlot() const;
+    enum { Type = UserType + 2 };
+
+    int type() const override { return Type; }    void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
+private:
+    GateItem* m_parent;
+    AnchorRole m_role;
+};
 
 class GateItem : public QGraphicsObject {
     Q_OBJECT
@@ -44,6 +66,9 @@ public:
     QPointF inputAnchor(int slot) const;
     void evaluate();
     bool hasInputSource(int slot) const;
+    void updateAnchorPositions();
+    QPointF localOutputAnchor() const;
+    QPointF localInputAnchor(int slot) const;
 
 signals:
     // Selection-based connection handling is managed by MainWindow.
@@ -64,4 +89,7 @@ private:
     QRectF m_rect;
     QPointer<GateItem> m_inputSourceA;
     QPointer<GateItem> m_inputSourceB;
+    AnchorItem* m_inputAnchorA;
+    AnchorItem* m_inputAnchorB;
+    AnchorItem* m_outputAnchor;
 };

@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget* parent)
       m_toggleAButton(new QPushButton("Toggle Input", this)),
       m_toggleBButton(nullptr),
       m_connectButton(new QPushButton("Connect selected", this)),
+      m_disconnectButton(new QPushButton("Disconnect wires", this)),
       m_deleteButton(new QPushButton("Delete", this)),
       m_gatePalette(new QListWidget(this)),
       m_truthTable(new QTableWidget(this)),
@@ -47,13 +48,18 @@ MainWindow::MainWindow(QWidget* parent)
     });
     connect(m_toggleAButton, &QPushButton::clicked, this, &MainWindow::toggleInputA);
     connect(m_connectButton, &QPushButton::clicked, this, &MainWindow::connectSelectedItems);
+    connect(m_disconnectButton, &QPushButton::clicked, this, &MainWindow::disconnectSelectedConnections);
     connect(m_deleteButton, &QPushButton::clicked, this, &MainWindow::deleteSelectedItem);
     connect(m_scene, &QGraphicsScene::selectionChanged, this, &MainWindow::updateSelectedGate);
 
     auto* connectShortcut = new QShortcut(QKeySequence(Qt::Key_C), this);
     connect(connectShortcut, &QShortcut::activated, this, &MainWindow::connectSelectedItems);
 
+    auto* deleteShortcut = new QShortcut(QKeySequence(Qt::Key_Delete), this);
+    connect(deleteShortcut, &QShortcut::activated, this, &MainWindow::deleteSelectedItem);
+
     m_connectButton->setEnabled(false);
+    m_disconnectButton->setEnabled(false);
     m_deleteButton->setEnabled(false);
     m_toggleAButton->setEnabled(false);
 }
@@ -115,6 +121,7 @@ void MainWindow::createInspector() {
     inspectorLayout->addWidget(new QLabel("Selected item controls"));
     inspectorLayout->addWidget(m_toggleAButton);
     inspectorLayout->addWidget(m_connectButton);
+    inspectorLayout->addWidget(m_disconnectButton);
     inspectorLayout->addWidget(m_deleteButton);
     inspectorLayout->addWidget(new QLabel("Truth Table / State"));
     inspectorLayout->addWidget(m_truthTable);
@@ -133,8 +140,12 @@ void MainWindow::createInspector() {
     addDockWidget(Qt::RightDockWidgetArea, inspectorDock);
     inspectorDock->show();
 
-    auto* hintLabel = new QLabel("C = connect selected", this);
-    statusBar()->addPermanentWidget(hintLabel);
+    auto* anchorHintLabel = new QLabel("Ctrl+click anchors to select them", this);
+    auto* connectHintLabel = new QLabel("C = connect selected", this);
+    auto* deleteHintLabel = new QLabel("Del = delete", this);
+    statusBar()->addPermanentWidget(anchorHintLabel);
+    statusBar()->addPermanentWidget(connectHintLabel);
+    statusBar()->addPermanentWidget(deleteHintLabel);
 }
 
 bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
@@ -263,19 +274,25 @@ void MainWindow::refreshTruthTable() {
     m_truthTable->clearContents();
     m_truthTable->setRowCount(0);
     if (m_selectedItem->itemKind() == ItemKind::InputSource) {
-        m_truthTable->setRowCount(1);
+        m_truthTable->setRowCount(2);
         m_truthTable->setItem(0, 0, new QTableWidgetItem(""));
         m_truthTable->setItem(0, 1, new QTableWidgetItem(""));
         m_truthTable->setItem(0, 2, new QTableWidgetItem(m_selectedItem->output() ? "1" : "0"));
+        m_truthTable->setItem(1, 0, new QTableWidgetItem(""));
+        m_truthTable->setItem(1, 1, new QTableWidgetItem(""));
+        m_truthTable->setItem(1, 2, new QTableWidgetItem(m_selectedItem->isConnected() ? "Connected" : "Disconnected"));
     } else if (m_selectedItem->itemKind() == ItemKind::OutputSink) {
-        m_truthTable->setRowCount(1);
+        m_truthTable->setRowCount(2);
         m_truthTable->setItem(0, 0, new QTableWidgetItem(""));
         m_truthTable->setItem(0, 1, new QTableWidgetItem(""));
         m_truthTable->setItem(0, 2, new QTableWidgetItem(m_selectedItem->output() ? "1" : "0"));
+        m_truthTable->setItem(1, 0, new QTableWidgetItem(""));
+        m_truthTable->setItem(1, 1, new QTableWidgetItem(""));
+        m_truthTable->setItem(1, 2, new QTableWidgetItem(m_selectedItem->isConnected() ? "Connected" : "Disconnected"));
     } else {
         const auto type = m_selectedItem->gateType();
         if (type == GateType::NOT) {
-            m_truthTable->setRowCount(2);
+            m_truthTable->setRowCount(3);
             for (int row = 0; row < 2; ++row) {
                 const bool a = row == 1;
                 const bool output = LogicEngine::evaluateGate(type, a);
@@ -283,8 +300,11 @@ void MainWindow::refreshTruthTable() {
                 m_truthTable->setItem(row, 1, new QTableWidgetItem("-"));
                 m_truthTable->setItem(row, 2, new QTableWidgetItem(output ? "1" : "0"));
             }
+            m_truthTable->setItem(2, 0, new QTableWidgetItem(""));
+            m_truthTable->setItem(2, 1, new QTableWidgetItem(""));
+            m_truthTable->setItem(2, 2, new QTableWidgetItem(m_selectedItem->isConnected() ? "Connected" : "Disconnected"));
         } else {
-            m_truthTable->setRowCount(4);
+            m_truthTable->setRowCount(5);
             static const bool rows[4][2] = {{false, false}, {false, true}, {true, false}, {true, true}};
             for (int row = 0; row < 4; ++row) {
                 const bool a = rows[row][0];
@@ -294,6 +314,9 @@ void MainWindow::refreshTruthTable() {
                 m_truthTable->setItem(row, 1, new QTableWidgetItem(b ? "1" : "0"));
                 m_truthTable->setItem(row, 2, new QTableWidgetItem(output ? "1" : "0"));
             }
+            m_truthTable->setItem(4, 0, new QTableWidgetItem(""));
+            m_truthTable->setItem(4, 1, new QTableWidgetItem(""));
+            m_truthTable->setItem(4, 2, new QTableWidgetItem(m_selectedItem->isConnected() ? "Connected" : "Disconnected"));
         }
     }
     m_truthTable->resizeColumnsToContents();
@@ -445,6 +468,52 @@ void MainWindow::removeItemWithConnections(GateItem* item) {
     }
 }
 
+void MainWindow::disconnectSelectedConnections() {
+    if (!m_selectedItem) {
+        QMessageBox::information(this, "Jhatkaa", "Select an item to disconnect.");
+        return;
+    }
+
+    std::vector<Connection> remaining;
+    bool removed = false;
+    for (const Connection& connection : std::as_const(m_connections)) {
+        if (connection.source == m_selectedItem || connection.target == m_selectedItem) {
+            if (connection.line) {
+                m_scene->removeItem(connection.line);
+                delete connection.line;
+            }
+            if (connection.target) {
+                if (connection.inputSlot == 0) {
+                    connection.target->setInputSourceA(nullptr);
+                } else {
+                    connection.target->setInputSourceB(nullptr);
+                }
+            }
+            removed = true;
+            continue;
+        }
+        remaining.push_back(connection);
+    }
+
+    m_connections = std::move(remaining);
+    for (QGraphicsItem* graphicsItem : m_scene->items()) {
+        if (auto* gate = qgraphicsitem_cast<GateItem*>(graphicsItem)) {
+            gate->setConnected(false);
+        }
+    }
+    for (const Connection& connection : std::as_const(m_connections)) {
+        if (connection.source) {
+            connection.source->setConnected(true);
+        }
+        if (connection.target) {
+            connection.target->setConnected(true);
+        }
+    }
+
+    m_statusLabel->setText(removed ? "Wires disconnected" : "No wires to disconnect");
+    refreshCircuit();
+}
+
 void MainWindow::deleteSelectedItem() {
     if (!m_selectedItem) {
         QMessageBox::information(this, "Jhatkaa", "Select an item to delete.");
@@ -509,35 +578,48 @@ void MainWindow::updateSelectedGate() {
         qDebug() << "  selected item:" << item;
     }
 
+    QList<AnchorItem*> selectedAnchors;
     QList<GateItem*> selectedGates;
     for (QGraphicsItem* item : selectedItems) {
-        if (auto* gate = qgraphicsitem_cast<GateItem*>(item)) {
+        if (auto* anchor = qgraphicsitem_cast<AnchorItem*>(item)) {
+            selectedAnchors.append(anchor);
+        } else if (auto* gate = qgraphicsitem_cast<GateItem*>(item)) {
             selectedGates.append(gate);
         }
     }
 
-    if (!selectedGates.isEmpty()) {
+    if (!selectedAnchors.isEmpty()) {
+        m_selectedItem = selectedAnchors.last()->gate();
+    } else if (!selectedGates.isEmpty()) {
         m_selectedItem = selectedGates.last();
     } else {
         m_selectedItem = nullptr;
     }
 
-    const int selectedCount = selectedGates.size();
-    if (selectedCount == 1 && m_selectedItem) {
+    const int selectedAnchorCount = selectedAnchors.size();
+    const int selectedGateCount = selectedGates.size();
+    if (selectedAnchorCount == 1 && m_selectedItem) {
+        const QString label = m_selectedItem->itemKind() == ItemKind::Gate
+            ? QString::fromStdString(LogicEngine::gateName(m_selectedItem->gateType()))
+            : (m_selectedItem->itemKind() == ItemKind::InputSource ? "INPUT" : "OUTPUT");
+        const QString connectionState = m_selectedItem->isConnected() ? "connected" : "disconnected";
+        m_statusLabel->setText(QString("Selected connection node on %1 (%2)").arg(label, connectionState));
+    } else if (selectedAnchorCount == 2) {
+        m_statusLabel->setText("Two connection nodes selected. Press Connect selected to wire them.");
+    } else if (selectedGateCount == 1 && m_selectedItem) {
         const QString label = m_selectedItem->itemKind() == ItemKind::Gate
             ? QString::fromStdString(LogicEngine::gateName(m_selectedItem->gateType()))
             : (m_selectedItem->itemKind() == ItemKind::InputSource ? "INPUT" : "OUTPUT");
         m_statusLabel->setText(QString("Selected %1").arg(label));
-    } else if (selectedCount == 2) {
-        m_statusLabel->setText("Two items selected. Press Connect selected to wire them.");
-    } else if (selectedCount > 2) {
-        m_statusLabel->setText(QString("%1 items selected").arg(selectedCount));
+    } else if (selectedGateCount > 1) {
+        m_statusLabel->setText(QString("%1 items selected").arg(selectedGateCount));
     } else {
         m_statusLabel->setText("Drag inputs, gates, or outputs from the palette");
     }
 
-    m_connectButton->setEnabled(selectedCount == 2);
-    m_deleteButton->setEnabled(selectedCount >= 1);
+    m_connectButton->setEnabled(selectedAnchorCount == 2);
+    m_disconnectButton->setEnabled(m_selectedItem != nullptr);
+    m_deleteButton->setEnabled(m_selectedItem != nullptr);
     m_toggleAButton->setEnabled(m_selectedItem && m_selectedItem->itemKind() == ItemKind::InputSource);
 
     refreshTruthTable();
@@ -546,64 +628,44 @@ void MainWindow::updateSelectedGate() {
 
 void MainWindow::connectSelectedItems() {
     const QList<QGraphicsItem*> selectedItems = m_scene->selectedItems();
-    QList<GateItem*> selectedGates;
+    QList<AnchorItem*> selectedAnchors;
     for (QGraphicsItem* item : selectedItems) {
-        if (auto* gate = qgraphicsitem_cast<GateItem*>(item)) {
-            selectedGates.append(gate);
+        if (auto* anchor = qgraphicsitem_cast<AnchorItem*>(item)) {
+            selectedAnchors.append(anchor);
         }
     }
 
-    if (selectedGates.size() != 2) {
-        QMessageBox::information(this, "Jhatkaa", "Select exactly two items to connect.");
+    if (selectedAnchors.size() != 2) {
+        QMessageBox::information(this, "Jhatkaa", "Select exactly two connection nodes to connect.");
         return;
     }
 
-    GateItem* item1 = selectedGates[0];
-    GateItem* item2 = selectedGates[1];
+    AnchorItem* anchor1 = selectedAnchors[0];
+    AnchorItem* anchor2 = selectedAnchors[1];
     GateItem* source = nullptr;
     GateItem* target = nullptr;
+    int inputSlot = -1;
 
-    const auto isSourceKind = [](GateItem* gate) {
-        return gate->itemKind() == ItemKind::InputSource || gate->itemKind() == ItemKind::Gate;
+    const auto isOutputAnchor = [](AnchorItem* anchor) {
+        return anchor && anchor->role() == AnchorItem::AnchorRole::Output;
     };
-    const auto isTargetKind = [](GateItem* gate) {
-        return gate->itemKind() == ItemKind::Gate || gate->itemKind() == ItemKind::OutputSink;
+    const auto isInputAnchor = [](AnchorItem* anchor) {
+        return anchor && (anchor->role() == AnchorItem::AnchorRole::InputA || anchor->role() == AnchorItem::AnchorRole::InputB);
     };
 
-    if (item1->itemKind() == ItemKind::Gate && item2->itemKind() == ItemKind::Gate) {
-        if (m_selectedItem == item1 || m_selectedItem == item2) {
-            target = m_selectedItem;
-            source = (target == item1) ? item2 : item1;
-        } else {
-            target = item2;
-            source = item1;
-        }
-    } else if (isSourceKind(item1) && isTargetKind(item2)) {
-        source = item1;
-        target = item2;
-    } else if (isSourceKind(item2) && isTargetKind(item1)) {
-        source = item2;
-        target = item1;
+    if (isOutputAnchor(anchor1) && isInputAnchor(anchor2)) {
+        source = anchor1->gate();
+        target = anchor2->gate();
+        inputSlot = anchor2->inputSlot();
+    } else if (isOutputAnchor(anchor2) && isInputAnchor(anchor1)) {
+        source = anchor2->gate();
+        target = anchor1->gate();
+        inputSlot = anchor1->inputSlot();
     }
 
-    qDebug() << "connectSelectedItems source/target" << source << target << "item1=" << item1 << "item2=" << item2;
-    if (!source || !target || source == target) {
-        QMessageBox::information(this, "Jhatkaa", "Cannot connect the selected items. Select a source and a target.");
-        return;
-    }
-
-    int inputSlot = 0;
-    qDebug() << "connectSelectedItems target kind=" << static_cast<int>(target->itemKind()) << "gateType=" << static_cast<int>(target->gateType());
-    if (target->itemKind() == ItemKind::OutputSink) {
-        inputSlot = 0;
-    } else if (target->gateType() == GateType::NOT) {
-        inputSlot = 0;
-    } else if (!target->hasInputSource(0)) {
-        inputSlot = 0;
-    } else if (!target->hasInputSource(1)) {
-        inputSlot = 1;
-    } else {
-        QMessageBox::information(this, "Jhatkaa", "Selected gate has no available input slots.");
+    qDebug() << "connectSelectedItems source/target" << source << target << "anchor1=" << anchor1 << "anchor2=" << anchor2;
+    if (!source || !target || source == target || inputSlot < 0) {
+        QMessageBox::information(this, "Jhatkaa", "Cannot connect the selected nodes. Select one output node and one input node.");
         return;
     }
 

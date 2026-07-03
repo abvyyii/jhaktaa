@@ -372,6 +372,7 @@ D:/jhatkaaa/build/jhatkaa_autogen/UVLADIE3JM/moc_mainwindow.cpp: D:/jhatkaaa/src
   C:/msys64/ucrt64/include/qt6/QtGui/qwindowdefs.h \
   C:/msys64/ucrt64/include/qt6/QtGui/qwindowdefs_win.h \
   C:/msys64/ucrt64/include/qt6/QtWidgets/QDockWidget \
+  C:/msys64/ucrt64/include/qt6/QtWidgets/QGraphicsEllipseItem \
   C:/msys64/ucrt64/include/qt6/QtWidgets/QGraphicsItem \
   C:/msys64/ucrt64/include/qt6/QtWidgets/QGraphicsLineItem \
   C:/msys64/ucrt64/include/qt6/QtWidgets/QGraphicsObject \

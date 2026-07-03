@@ -349,6 +349,7 @@ D:/jhatkaaa/build/jhatkaa_autogen/UVLADIE3JM/moc_gateitem.cpp: D:/jhatkaaa/src/g
   C:/msys64/ucrt64/include/qt6/QtGui/qtransform.h \
   C:/msys64/ucrt64/include/qt6/QtGui/qwindowdefs.h \
   C:/msys64/ucrt64/include/qt6/QtGui/qwindowdefs_win.h \
+  C:/msys64/ucrt64/include/qt6/QtWidgets/QGraphicsEllipseItem \
   C:/msys64/ucrt64/include/qt6/QtWidgets/QGraphicsObject \
   C:/msys64/ucrt64/include/qt6/QtWidgets/qgraphicsitem.h \
   C:/msys64/ucrt64/include/qt6/QtWidgets/qtwidgets-config.h \

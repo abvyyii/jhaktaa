@@ -38,6 +38,7 @@ private slots:
     void toggleInputB();
     void updateSelectedGate();
     void connectSelectedItems();
+    void disconnectSelectedConnections();
     void deleteSelectedItem();
 
 private:
@@ -63,6 +64,7 @@ private:
     QPushButton* m_toggleAButton;
     QPushButton* m_toggleBButton;
     QPushButton* m_connectButton;
+    QPushButton* m_disconnectButton;
     QPushButton* m_deleteButton;
     QListWidget* m_gatePalette;
     QTableWidget* m_truthTable;

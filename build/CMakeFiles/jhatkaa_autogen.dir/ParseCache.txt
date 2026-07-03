@@ -350,6 +350,7 @@ D:/jhatkaaa/src/gateitem.h
  mdp:C:/msys64/ucrt64/include/qt6/QtGui/qtransform.h
  mdp:C:/msys64/ucrt64/include/qt6/QtGui/qwindowdefs.h
  mdp:C:/msys64/ucrt64/include/qt6/QtGui/qwindowdefs_win.h
+ mdp:C:/msys64/ucrt64/include/qt6/QtWidgets/QGraphicsEllipseItem
  mdp:C:/msys64/ucrt64/include/qt6/QtWidgets/QGraphicsObject
  mdp:C:/msys64/ucrt64/include/qt6/QtWidgets/qgraphicsitem.h
  mdp:C:/msys64/ucrt64/include/qt6/QtWidgets/qtwidgets-config.h
@@ -754,6 +755,7 @@ D:/jhatkaaa/src/mainwindow.h
  mdp:C:/msys64/ucrt64/include/qt6/QtGui/qwindowdefs.h
  mdp:C:/msys64/ucrt64/include/qt6/QtGui/qwindowdefs_win.h
  mdp:C:/msys64/ucrt64/include/qt6/QtWidgets/QDockWidget
+ mdp:C:/msys64/ucrt64/include/qt6/QtWidgets/QGraphicsEllipseItem
  mdp:C:/msys64/ucrt64/include/qt6/QtWidgets/QGraphicsItem
  mdp:C:/msys64/ucrt64/include/qt6/QtWidgets/QGraphicsLineItem
  mdp:C:/msys64/ucrt64/include/qt6/QtWidgets/QGraphicsObject
