@@ -61,8 +61,6 @@ private:
     QGraphicsView* m_view;
     QPointer<GateItem> m_selectedItem;
     QLabel* m_statusLabel;
-    QPushButton* m_toggleAButton;
-    QPushButton* m_toggleBButton;
     QPushButton* m_connectButton;
     QPushButton* m_disconnectButton;
     QPushButton* m_deleteButton;

@@ -30,7 +30,7 @@ int AnchorItem::inputSlot() const {
 }
 
 GateItem::GateItem(ItemKind kind, GateType type, QGraphicsItem* parent)
-    : QGraphicsObject(parent), m_kind(kind), m_type(type), m_value(false), m_inputA(false), m_inputB(false), m_output(false), m_connected(false),
+    : QGraphicsObject(parent), m_kind(kind), m_type(type), m_value(false), m_inputA(false), m_inputB(false), m_output(false), m_connected(false), m_togglePending(false),
       m_rect(kind == ItemKind::Gate ? QRectF(0, 0, 98, 63) : QRectF(0, 0, 77, 49)), m_inputSourceA(nullptr), m_inputSourceB(nullptr),
       m_inputAnchorA(nullptr), m_inputAnchorB(nullptr), m_outputAnchor(nullptr) {
     setFlags(ItemIsMovable | ItemIsSelectable);
@@ -130,6 +130,10 @@ void GateItem::setConnected(bool connected) {
 
 bool GateItem::isConnected() const {
     return m_connected;
+}
+
+bool GateItem::isTogglePending() const {
+    return m_togglePending;
 }
 
 QPointF GateItem::localOutputAnchor() const {
@@ -290,7 +294,21 @@ void AnchorItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option
     painter->setPen(QPen(border, isSelected() ? 2 : 1));
     painter->drawEllipse(rect());
 }
+void GateItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
+    if (event->button() == Qt::LeftButton && m_kind == ItemKind::InputSource) {
+        if (isSelected()) {
+            m_togglePending = false;
+            toggleValue();
+            emit toggled();
+        } else {
+            m_togglePending = true;
+            setSelected(true);
+        }
+    }
+    QGraphicsObject::mousePressEvent(event);
+}
+
 void GateItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) {
     Q_UNUSED(event);
-    // Ignore double-clicks on gate items so only the Toggle Input button changes output.
+    // Ignore double-clicks so input toggling is handled by a single click.
 }

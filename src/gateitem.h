@@ -60,6 +60,7 @@ public:
     void clearInputSources();
     void setConnected(bool connected);
     bool isConnected() const;
+    bool isTogglePending() const;
     enum { Type = QGraphicsItem::UserType + 1 };
 
     QPointF outputAnchor() const;
@@ -71,11 +72,14 @@ public:
     QPointF localInputAnchor(int slot) const;
 
 signals:
+    void toggled();
+
     // Selection-based connection handling is managed by MainWindow.
 
 protected:
     int type() const override { return Type; }
     QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
 
 private:
@@ -86,6 +90,7 @@ private:
     bool m_inputB;
     bool m_output;
     bool m_connected;
+    bool m_togglePending;
     QRectF m_rect;
     QPointer<GateItem> m_inputSourceA;
     QPointer<GateItem> m_inputSourceB;

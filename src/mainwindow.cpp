@@ -13,6 +13,7 @@
 #include <QShortcut>
 #include <QStatusBar>
 #include <QTableWidgetItem>
+#include <QWheelEvent>
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
@@ -20,8 +21,6 @@ MainWindow::MainWindow(QWidget* parent)
       m_view(new QGraphicsView(m_scene, this)),
       m_selectedItem(nullptr),
       m_statusLabel(new QLabel("Drag inputs, gates, or outputs from the palette", this)),
-      m_toggleAButton(new QPushButton("Toggle Input", this)),
-      m_toggleBButton(nullptr),
       m_connectButton(new QPushButton("Connect selected", this)),
       m_disconnectButton(new QPushButton("Disconnect wires", this)),
       m_deleteButton(new QPushButton("Delete", this)),
@@ -43,10 +42,9 @@ MainWindow::MainWindow(QWidget* parent)
     m_view->viewport()->setAcceptDrops(true);
     m_view->viewport()->installEventFilter(this);
 
-    connect(m_gatePalette, &QListWidget::itemDoubleClicked, this, [this](QListWidgetItem* item) {
+    connect(m_gatePalette, &QListWidget::itemClicked, this, [this](QListWidgetItem* item) {
         addSceneItem(item->text(), QPointF(100, 100));
     });
-    connect(m_toggleAButton, &QPushButton::clicked, this, &MainWindow::toggleInputA);
     connect(m_connectButton, &QPushButton::clicked, this, &MainWindow::connectSelectedItems);
     connect(m_disconnectButton, &QPushButton::clicked, this, &MainWindow::disconnectSelectedConnections);
     connect(m_deleteButton, &QPushButton::clicked, this, &MainWindow::deleteSelectedItem);
@@ -61,27 +59,11 @@ MainWindow::MainWindow(QWidget* parent)
     m_connectButton->setEnabled(false);
     m_disconnectButton->setEnabled(false);
     m_deleteButton->setEnabled(false);
-    m_toggleAButton->setEnabled(false);
 }
 
 void MainWindow::createToolbar() {
     auto* toolbar = addToolBar("Tools");
     toolbar->setMovable(false);
-
-    auto* clearButton = new QPushButton("Clear", this);
-    auto* connectToolbarButton = new QPushButton("Connect selected", this);
-    toolbar->addWidget(clearButton);
-    toolbar->addSeparator();
-    toolbar->addWidget(connectToolbarButton);
-
-    connect(clearButton, &QPushButton::clicked, this, [this]() {
-        clearConnections();
-        m_scene->clear();
-        m_selectedItem = nullptr;
-        m_statusLabel->setText("Canvas cleared");
-        refreshTruthTable();
-    });
-    connect(connectToolbarButton, &QPushButton::clicked, this, &MainWindow::connectSelectedItems);
 }
 
 void MainWindow::createCanvas() {
@@ -105,9 +87,13 @@ void MainWindow::createCanvas() {
     m_gatePalette->addItem("NAND");
 
     m_view->setRenderHint(QPainter::Antialiasing);
-    m_view->setSceneRect(0, 0, 900, 600);
+    m_view->setSceneRect(0, 0, 4000, 3000);
     m_view->setDragMode(QGraphicsView::RubberBandDrag);
     m_view->setMinimumSize(700, 600);
+    m_view->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    m_view->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    m_view->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    m_view->setResizeAnchor(QGraphicsView::AnchorViewCenter);
 
     layout->addWidget(palettePanel, 1);
     layout->addWidget(m_view, 4);
@@ -118,8 +104,17 @@ void MainWindow::createInspector() {
     auto* inspector = new QWidget(this);
     auto* inspectorLayout = new QVBoxLayout(inspector);
 
+    auto* clearButton = new QPushButton("Clear", this);
+    connect(clearButton, &QPushButton::clicked, this, [this]() {
+        clearConnections();
+        m_scene->clear();
+        m_selectedItem = nullptr;
+        m_statusLabel->setText("Canvas cleared");
+        refreshTruthTable();
+    });
+
     inspectorLayout->addWidget(new QLabel("Selected item controls"));
-    inspectorLayout->addWidget(m_toggleAButton);
+    inspectorLayout->addWidget(clearButton);
     inspectorLayout->addWidget(m_connectButton);
     inspectorLayout->addWidget(m_disconnectButton);
     inspectorLayout->addWidget(m_deleteButton);
@@ -137,8 +132,11 @@ void MainWindow::createInspector() {
 
     auto* inspectorDock = new QDockWidget("Inspector", this);
     inspectorDock->setWidget(inspector);
+    inspectorDock->setAllowedAreas(Qt::AllDockWidgetAreas);
+    inspectorDock->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
     addDockWidget(Qt::RightDockWidgetArea, inspectorDock);
     inspectorDock->show();
+    inspectorDock->setFeatures(QDockWidget::NoDockWidgetFeatures);
 
     auto* anchorHintLabel = new QLabel("Ctrl+click anchors to select them", this);
     auto* connectHintLabel = new QLabel("C = connect selected", this);
@@ -171,6 +169,14 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
             addSceneItem(type, scenePos);
             dropEvent->acceptProposedAction();
             return true;
+        }
+        if (event->type() == QEvent::Wheel) {
+            auto* wheelEvent = static_cast<QWheelEvent*>(event);
+            if (wheelEvent->modifiers() & Qt::ControlModifier) {
+                const qreal factor = wheelEvent->angleDelta().y() > 0 ? 1.1 : 0.9;
+                m_view->scale(factor, factor);
+                return true;
+            }
         }
         if (event->type() == QEvent::MouseButtonRelease) {
             updateWirePositions();
@@ -546,6 +552,9 @@ void MainWindow::addSceneItem(const QString& type, const QPointF& scenePos) {
     item->setPos(scenePos);
     item->setSelected(true);
     m_scene->addItem(item);
+    connect(item, &GateItem::toggled, this, [this]() {
+        refreshCircuit();
+    });
     m_selectedItem = item;
     refreshCircuit();
     m_statusLabel->setText(QString("Added %1").arg(type));
@@ -620,7 +629,6 @@ void MainWindow::updateSelectedGate() {
     m_connectButton->setEnabled(selectedAnchorCount == 2);
     m_disconnectButton->setEnabled(m_selectedItem != nullptr);
     m_deleteButton->setEnabled(m_selectedItem != nullptr);
-    m_toggleAButton->setEnabled(m_selectedItem && m_selectedItem->itemKind() == ItemKind::InputSource);
 
     refreshTruthTable();
     m_updatingSelection = false;
